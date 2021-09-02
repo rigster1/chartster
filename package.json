@@ -1,0 +1,26 @@
+{
+  "name": "chartster",
+  "version": "1.0.0",
+  "description": "A JavaScript charting library for stock data.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rigster1/chartster.git"
+  },
+  "keywords": [
+    "chartster",
+    "charting",
+    "library",
+    "stock",
+    "data"
+  ],
+  "author": "Scott Taylor <scott.taylor485@gmail.com> (http://s-taylor.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rigster1/chartster/issues"
+  },
+  "homepage": "https://github.com/rigster1/chartster#readme"
+}
