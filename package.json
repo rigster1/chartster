@@ -1,0 +1,54 @@
+{
+  "name": "chartster",
+  "version": "0.0.0-development",
+  "description": "A JavaScript charting library for stock data.",
+  "main": "dist/bundle.js",
+  "scripts": {
+    "commit": "cz",
+    "test": "mocha src/index.test.js --require @babel/register",
+    "test:watch": "npm test -- -w",
+    "prebuild": "rimraf dist",
+    "build": "npx webpack",
+    "semantic-release": "semantic-release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rigster1/chartster.git"
+  },
+  "keywords": [
+    "chartster",
+    "charting",
+    "library",
+    "stock",
+    "data"
+  ],
+  "author": "Scott Taylor <scott.taylor485@gmail.com> (http://s-taylor.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rigster1/chartster/issues"
+  },
+  "homepage": "https://github.com/rigster1/chartster#readme",
+  "devDependencies": {
+    "@babel/core": "7.15.4",
+    "@babel/preset-env": "7.15.4",
+    "@babel/register": "7.15.3",
+    "babel-loader": "8.2.2",
+    "chai": "4.3.4",
+    "cz-conventional-changelog": "3.3.0",
+    "ghooks": "2.0.4",
+    "mocha": "9.1.1",
+    "rimraf": "3.0.2",
+    "semantic-release": "17.4.7",
+    "webpack": "5.51.2",
+    "webpack-cli": "4.8.0"
+  },
+  "dependencies": {},
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    },
+    "ghooks": {
+      "pre-commit": "npm test"
+    }
+  }
+}
