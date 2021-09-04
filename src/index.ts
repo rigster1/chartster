@@ -1,1 +1,1 @@
-export { initChart } from "./api/init-chart/init-chart";
+export { createChartingPanel } from "./api/create-charting-panel";
