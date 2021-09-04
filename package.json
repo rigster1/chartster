@@ -2,23 +2,13 @@
   "name": "chartster",
   "version": "0.0.0-development",
   "description": "A JavaScript charting library for stock data.",
-  "main": "dist/bundle.js",
-  "release": {
-    "branches": [
-      "main"
-    ]
-  },
-  "scripts": {
-    "commit": "cz",
-    "test": "mocha src/index.test.ts",
-    "test:watch": "npm test -- -w",
-    "build": "npx webpack",
-    "build:watch": "npm run build -- -w",
-    "semantic-release": "semantic-release"
-  },
+  "homepage": "https://github.com/rigster1/chartster#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rigster1/chartster.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rigster1/chartster/issues"
   },
   "keywords": [
     "chartster",
@@ -27,12 +17,22 @@
     "stock",
     "data"
   ],
-  "author": "Scott Taylor <scott.taylor485@gmail.com> (http://s-taylor.com/)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/rigster1/chartster/issues"
+  "author": "Scott Taylor <scott.taylor485@gmail.com> (http://s-taylor.com/)",
+  "main": "dist/bundle.js",
+  "release": {
+    "branches": [
+      "main"
+    ]
   },
-  "homepage": "https://github.com/rigster1/chartster#readme",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    },
+    "ghooks": {
+      "pre-commit": "npm test"
+    }
+  },
   "devDependencies": {
     "@types/chai": "4.2.21",
     "@types/mocha": "9.0.0",
@@ -51,12 +51,12 @@
     "webpack-cli": "4.8.0"
   },
   "dependencies": {},
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    },
-    "ghooks": {
-      "pre-commit": "npm test"
-    }
+  "scripts": {
+    "commit": "cz",
+    "test": "mocha tests/**/*.test.ts",
+    "test:watch": "npm test -- -w",
+    "build": "npx webpack",
+    "build:watch": "npm run build -- -w",
+    "semantic-release": "semantic-release"
   }
 }
