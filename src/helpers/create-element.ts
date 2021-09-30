@@ -1,6 +1,4 @@
-import { ElementObject } from "./ielement-object";
-
-export const createElement = function (elementObject: ElementObject) {
+export const createElement = function (elementObject: any) {
   let type = elementObject.type || "div";
   let element = document.createElement(type);
 
