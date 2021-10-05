@@ -1,22 +1,26 @@
-import { getDisplayAreaMatrix } from "../helpers/get-display-area-matrix";
-import { multiplyMatrix } from "../helpers/matrix-multiplication";
+import { Settings } from "http2";
+import { MathType, Matrix } from "mathjs";
 import { IObjectTree } from "../models/iobject-tree";
+import { ISettings } from "../models/isettings";
 import { renderKlines } from "./klines-render";
 import { renderPriceAxis } from "./price-axis-render";
 import { renderTA } from "./ta-render";
 import { renderTimeAxis } from "./time-axis-render";
 
 export const renderGraph = (
-  ctx: CanvasRenderingContext2D,
+  klineCtx: CanvasRenderingContext2D,
+  priceCtx: CanvasRenderingContext2D,
+  timeCtx: CanvasRenderingContext2D,
   objectTree: IObjectTree,
-  tMatrix: Array<number>
+  tMatrix: Matrix
 ) => {
-  ctx.fillStyle = "#131722";
-  ctx.fillRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
+  const settings: ISettings = {
+    color: "#131722",
+  };
 
-  renderKlines(ctx, objectTree.klineSeries, tMatrix);
+  renderKlines(klineCtx, objectTree.klineSeries, tMatrix, settings);
   //renderTA(ctx, objectTree.taData);
 
-  //renderPriceAxis(ctx, tMatrix);
-  //renderTimeAxis(ctx, tMatrix);
+  renderPriceAxis(priceCtx, tMatrix, settings);
+  renderTimeAxis(timeCtx, tMatrix, settings);
 };

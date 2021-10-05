@@ -1,5 +1,5 @@
-import { ToolbarComponent } from "./toolbar-component";
-import { GraphComponent } from "./graph/graph-component";
+import { ToolbarComponent } from "./toolbar-components/toolbar-component";
+import { GraphComponent } from "./graph-components/graph-component";
 
 import { IKlineSeries } from "../models/ikline-series";
 

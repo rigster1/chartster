@@ -1,10 +1,11 @@
+import { add, matrix, Matrix, multiply } from "mathjs";
 import { createElement } from "../../helpers/create-element";
-import { multiplyMatrix } from "../../helpers/matrix-multiplication";
+import { resizeCanvas } from "../../helpers/resize-canvas";
 import { IPoint } from "../../models/ipoints";
 import { ChartComponent } from "../chart-component";
 import { GraphComponent } from "./graph-component";
 
-export class PriceAxisComponent {
+export class KlineViewerComponent {
   private _graphComponent: GraphComponent;
 
   private _canvas: HTMLCanvasElement;
@@ -17,18 +18,22 @@ export class PriceAxisComponent {
   public constructor(graphComponent: GraphComponent) {
     this._graphComponent = graphComponent;
 
+    const height = this._graphComponent.element.clientHeight - 100;
+    const width = this._graphComponent.element.clientWidth - 100;
+
     this._canvas = createElement({
       type: "canvas",
-      className: "price-canvas",
+      className: "kline-canvas",
       style: {
-        backgroundColor: "red",
-        float: "right",
-      },
-      attributes: {
-        height: `${this._graphComponent.element.clientHeight - 100}`,
-        width: `100px`,
+        float: "left",
+        height: `${height}px`,
+        width: `${width}px`,
       },
     });
+
+    this._canvasContext = this._canvas.getContext("2d");
+
+    resizeCanvas(this._canvas, this._canvasContext, width, height);
 
     this._graphComponent.element.appendChild(this.canvas);
 
@@ -47,8 +52,6 @@ export class PriceAxisComponent {
     this._canvas.onwheel = (event: WheelEvent) => {
       this.graphWheel(event);
     };
-
-    this._canvasContext = this._canvas.getContext("2d");
 
     this._drag = false;
     this._dragStart = {
@@ -89,19 +92,40 @@ export class PriceAxisComponent {
 
   public graphMouseUp(event: MouseEvent) {
     this._drag = false;
+    this._dragStart = {
+      x: 0,
+      y: 0,
+    };
+    this._dragEnd = {
+      x: 0,
+      y: 0,
+    };
   }
 
   public graphMouseMove(event: MouseEvent) {
+    console.log(this._graphComponent.transformationMatrix);
+
     if (this._drag) {
       this._dragEnd = {
         x: event.pageX - this._canvas.offsetLeft,
         y: event.pageY - this._canvas.offsetTop,
       };
+
+      console.log(this._dragEnd);
+
       var xDrag = this._dragEnd.x - this._dragStart.x;
       var yDrag = this._dragEnd.y - this._dragStart.y;
 
-      this._graphComponent.transformationMatrix[2] += xDrag;
-      this._graphComponent.transformationMatrix[5] += yDrag;
+      var transform: Matrix = matrix([
+        [0, 0, xDrag],
+        [0, 0, yDrag],
+        [0, 0, 0],
+      ]);
+
+      this._graphComponent.transformationMatrix = add(
+        this._graphComponent.transformationMatrix,
+        transform
+      ) as Matrix;
 
       this._dragStart = this._dragEnd;
 
@@ -112,23 +136,31 @@ export class PriceAxisComponent {
   public graphWheel(event: WheelEvent) {
     var scaleFactor = 0;
 
-    if (event.deltaY > 0) scaleFactor = 0.75;
-    else scaleFactor = 1.25;
+    if (event.deltaY > 0) scaleFactor = 0.9;
+    else scaleFactor = 1.1;
 
     var mosPos = this.getMousePos(event);
 
-    var t1 = [1, 0, mosPos.x, 0, 1, 0 /*mosPos.y*/, 0, 0, 1];
-    var s = [scaleFactor, 0, 0, 0, 1 /*scaleFactor*/, 0, 0, 0, 1];
-    var t2 = [1, 0, -mosPos.x, 0, 1, 0 /*-mosPos.y*/, 0, 0, 1];
+    var t1: Matrix = matrix([
+      [1, 0, mosPos.x],
+      [0, 1, 0 /*mosPos.y*/],
+      [0, 0, 1],
+    ]);
+    var s: Matrix = matrix([
+      [scaleFactor, 0, 0],
+      [0, 1 /*sF*/, 0],
+      [0, 0, 1],
+    ]);
+    var t2: Matrix = matrix([
+      [1, 0, -mosPos.x],
+      [0, 1, 0 /*-mosPos.y*/],
+      [0, 0, 1],
+    ]);
 
-    // var t1 = [1, 0, mosPos.x, 0, 1, mosPos.y, 0, 0, 1];
-    // var s = [scaleFactor, 0, 0, 0, scaleFactor, 0, 0, 0, 1];
-    // var t2 = [1, 0, -mosPos.x, 0, 1, -mosPos.y, 0, 0, 1];
+    var x1: Matrix = multiply(t1, s) as Matrix;
+    var x2: Matrix = multiply(x1, t2);
 
-    var x1 = multiplyMatrix(t1, s);
-    var x2 = multiplyMatrix(x1, t2);
-
-    var x3 = multiplyMatrix(x2, this._graphComponent.transformationMatrix);
+    var x3: Matrix = multiply(x2, this._graphComponent.transformationMatrix);
 
     this._graphComponent.transformationMatrix = x3;
 

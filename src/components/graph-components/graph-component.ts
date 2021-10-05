@@ -1,8 +1,12 @@
-import { createElement } from "../../helpers/create-element";
-import { getDisplayAreaMatrix } from "../../helpers/get-display-area-matrix";
+import { identity, MathType, Matrix } from "mathjs";
+
 import { IKlineSeries } from "../../models/ikline-series";
 import { IObjectTree } from "../../models/iobject-tree";
+
+import { createElement } from "../../helpers/create-element";
+import { realAreaToMatrix } from "../../helpers/real-area-to-matrix";
 import { renderGraph } from "../../renderers/graph-render";
+
 import { ChartComponent } from "../chart-component";
 import { KlineViewerComponent } from "./kline-viewer-component";
 import { PriceAxisComponent } from "./price-axis-component";
@@ -20,7 +24,7 @@ export class GraphComponent {
   private _klineSeriesArray: IKlineSeries[] = [];
   private _objectTree: IObjectTree;
 
-  private _transformationMatrix: Array<number>;
+  private _transformationMatrix: Matrix;
 
   public constructor(chartComponent: ChartComponent) {
     this._element = createElement({
@@ -49,7 +53,7 @@ export class GraphComponent {
       taData: [],
     };
 
-    this._transformationMatrix = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+    this._transformationMatrix = identity(3, 3) as Matrix;
   }
 
   public get element() {
@@ -60,7 +64,7 @@ export class GraphComponent {
     return this._transformationMatrix;
   }
 
-  public set transformationMatrix(value: Array<number>) {
+  public set transformationMatrix(value: Matrix) {
     this._transformationMatrix = value;
   }
 
@@ -69,6 +73,8 @@ export class GraphComponent {
 
     renderGraph(
       this._klineViewerComponent.canvasContext,
+      this._priceAxisComponent.canvasContext,
+      this._timeAxisComponent.canvasContext,
       this._objectTree,
       this._transformationMatrix
     );
@@ -89,7 +95,7 @@ export class GraphComponent {
     console.log("maxHigh", maxHigh);
     console.log("minLow", minLow);
 
-    this._transformationMatrix = getDisplayAreaMatrix(
+    this._transformationMatrix = realAreaToMatrix(
       {
         topLeft: {
           x: klines[0].openTime - interval,
@@ -102,6 +108,8 @@ export class GraphComponent {
       },
       this._klineViewerComponent.canvas.getBoundingClientRect()
     );
+
+    console.log("start", this._transformationMatrix);
   }
 
   public setTAData(taData: any[]) {

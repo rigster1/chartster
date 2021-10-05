@@ -50,7 +50,9 @@
     "webpack": "5.51.2",
     "webpack-cli": "4.8.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "mathjs": "9.5.0"
+  },
   "scripts": {
     "commit": "cz",
     "test": "mocha tests/**/*.test.ts",

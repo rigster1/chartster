@@ -1,5 +1,4 @@
 import { createElement } from "../../helpers/create-element";
-import { multiplyMatrix } from "../../helpers/matrix-multiplication";
 import { IPoint } from "../../models/ipoints";
 import { ChartComponent } from "../chart-component";
 import { GraphComponent } from "./graph-component";
@@ -16,10 +15,12 @@ export class SettingsComponent {
       type: "div",
       className: "settings-div",
       style: {
-        backgroundColor: "yellow",
+        backgroundColor: "#1A1423",
         float: "right",
         height: `100px`,
         width: `100px`,
+        borderTop: "1px solid white",
+        borderLeft: "1px solid white",
       },
     });
 

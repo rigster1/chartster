@@ -1,10 +1,10 @@
+import { add, matrix, Matrix, multiply } from "mathjs";
 import { createElement } from "../../helpers/create-element";
-import { multiplyMatrix } from "../../helpers/matrix-multiplication";
 import { IPoint } from "../../models/ipoints";
 import { ChartComponent } from "../chart-component";
 import { GraphComponent } from "./graph-component";
 
-export class KlineViewerComponent {
+export class PriceAxisComponent {
   private _graphComponent: GraphComponent;
 
   private _canvas: HTMLCanvasElement;
@@ -19,13 +19,14 @@ export class KlineViewerComponent {
 
     this._canvas = createElement({
       type: "canvas",
-      className: "kline-canvas",
+      className: "price-canvas",
       style: {
-        float: "left"
-      }
+        backgroundColor: "red",
+        float: "right",
+      },
       attributes: {
         height: `${this._graphComponent.element.clientHeight - 100}`,
-        width: `${this._graphComponent.element.clientWidth - 100}`,
+        width: `100px`,
       },
     });
 
@@ -88,6 +89,14 @@ export class KlineViewerComponent {
 
   public graphMouseUp(event: MouseEvent) {
     this._drag = false;
+    this._dragStart = {
+      x: 0,
+      y: 0,
+    };
+    this._dragEnd = {
+      x: 0,
+      y: 0,
+    };
   }
 
   public graphMouseMove(event: MouseEvent) {
@@ -99,9 +108,16 @@ export class KlineViewerComponent {
       var xDrag = this._dragEnd.x - this._dragStart.x;
       var yDrag = this._dragEnd.y - this._dragStart.y;
 
-      this._graphComponent.transformationMatrix[2] += xDrag;
-      this._graphComponent.transformationMatrix[5] += yDrag;
+      var transform: Matrix = matrix([
+        [0, 0, xDrag],
+        [0, 0, yDrag],
+        [0, 0, 0],
+      ]);
 
+      this._graphComponent.transformationMatrix = add(
+        this._graphComponent.transformationMatrix,
+        transform
+      ) as Matrix;
       this._dragStart = this._dragEnd;
 
       this._graphComponent.render();
@@ -111,27 +127,40 @@ export class KlineViewerComponent {
   public graphWheel(event: WheelEvent) {
     var scaleFactor = 0;
 
-    if (event.deltaY > 0) scaleFactor = 0.75;
-    else scaleFactor = 1.25;
+    if (event.deltaY > 0) scaleFactor = 0.9;
+    else scaleFactor = 1.1;
 
-    var mosPos = this.getMousePos(event);
+    console.log(this.canvas.getBoundingClientRect());
+    console.log(this.canvas.getBoundingClientRect().y / 2);
+    console.log(this.getMousePos(event));
 
-    var t1 = [1, 0, mosPos.x, 0, 1, 0 /*mosPos.y*/, 0, 0, 1];
-    var s = [scaleFactor, 0, 0, 0, 1 /*scaleFactor*/, 0, 0, 0, 1];
-    var t2 = [1, 0, -mosPos.x, 0, 1, 0 /*-mosPos.y*/, 0, 0, 1];
+    var mosPos = {
+      x: 0,
+      y: this.canvas.getBoundingClientRect().height / 2,
+    };
 
-    // var t1 = [1, 0, mosPos.x, 0, 1, mosPos.y, 0, 0, 1];
-    // var s = [scaleFactor, 0, 0, 0, scaleFactor, 0, 0, 0, 1];
-    // var t2 = [1, 0, -mosPos.x, 0, 1, -mosPos.y, 0, 0, 1];
+    var t1: Matrix = matrix([
+      [1, 0, 0],
+      [0, 1, mosPos.y],
+      [0, 0, 1],
+    ]);
+    var s: Matrix = matrix([
+      [1, 0, 0],
+      [0, scaleFactor, 0],
+      [0, 0, 1],
+    ]);
+    var t2: Matrix = matrix([
+      [1, 0, 0],
+      [0, 1, 0 - mosPos.y],
+      [0, 0, 1],
+    ]);
 
-    var x1 = multiplyMatrix(t1, s);
-    var x2 = multiplyMatrix(x1, t2);
+    var x1: Matrix = multiply(t1, s);
+    var x2: Matrix = multiply(x1, t2);
 
-    var x3 = multiplyMatrix(x2, this._graphComponent.transformationMatrix);
+    var x3: Matrix = multiply(x2, this._graphComponent.transformationMatrix);
 
     this._graphComponent.transformationMatrix = x3;
-
-    console.log(x3);
 
     event.preventDefault();
 

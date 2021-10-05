@@ -1,13 +1,18 @@
-import { multiplyMatrix } from "../helpers/matrix-multiplication";
+import { MathType, Matrix, multiply, subset } from "mathjs";
 import { IKline } from "../models/ikline";
 import { IKlineSeries } from "../models/ikline-series";
 import { IObjectTree } from "../models/iobject-tree";
+import { ISettings } from "../models/isettings";
 
 export const renderKlines = (
   ctx: CanvasRenderingContext2D,
   klineSeries: IKlineSeries,
-  tMatrix: Array<number>
+  tMatrix: Matrix,
+  settings: ISettings
 ) => {
+  ctx.fillStyle = settings.color;
+  ctx.fillRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
+
   const barWidth = klineSeries.interval * 0.75;
 
   klineSeries.klines.forEach((kline) => {
@@ -25,24 +30,35 @@ export const renderKlines = (
         1,
       ];
 
-      const tLI = multiplyMatrix(tMatrix, tL);
-      const bRI = multiplyMatrix(tMatrix, bR);
+      const tLI = multiply(tMatrix, tL) as Matrix;
+      const bRI = multiply(tMatrix, bR) as Matrix;
 
-      ctx.fillStyle = accumulation ? "#f6e7c2" : "#649fd7";
-      ctx.fillRect(tLI[0], tLI[1], bRI[0] - tLI[0], bRI[1] - tLI[1]);
+      const width = bRI.get([0]) - tLI.get([0]);
+      const height = bRI.get([1]) - tLI.get([1]);
+
+      ctx.fillStyle = accumulation ? "#649fd7" : "#f6e7c2";
+      ctx.fillRect(
+        Math.round(tLI.get([0])),
+        Math.round(tLI.get([1])),
+        Math.round(width),
+        Math.round(Math.abs(height) < 1 ? 1 : height)
+      );
     };
 
     const wick = () => {
       const tL = [kline.openTime, kline.high, 1];
       const bR = [kline.openTime, kline.low, 1];
 
-      const tLI = multiplyMatrix(tMatrix, tL);
-      const bRI = multiplyMatrix(tMatrix, bR);
+      const tLI = multiply(tMatrix, tL);
+      const bRI = multiply(tMatrix, bR);
 
-      ctx.strokeStyle = accumulation ? "#f6e7c2" : "#649fd7";
+      ctx.strokeStyle = accumulation ? "#649fd7" : "#f6e7c2";
       ctx.beginPath();
-      ctx.moveTo(tLI[0], tLI[1]);
-      ctx.lineTo(bRI[0], bRI[1]);
+
+      console.log(tLI.get([0]), tLI.get([1]));
+
+      ctx.moveTo(tLI.get([0]), tLI.get([1]));
+      ctx.lineTo(bRI.get([0]), bRI.get([1]));
       ctx.stroke();
     };
 
