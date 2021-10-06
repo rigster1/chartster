@@ -1,4 +1,5 @@
 import { createElement } from "../../helpers/create-element";
+
 import { ChartComponent } from "../chart-component";
 
 export class ToolbarComponent {
@@ -74,7 +75,7 @@ export class ToolbarComponent {
     this._element.appendChild(this._toolsElement);
   }
 
-  public get element() {
+  public get element(): HTMLElement {
     return this._element;
   }
 }

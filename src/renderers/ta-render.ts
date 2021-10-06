@@ -1,5 +1,6 @@
-import { MathType, Matrix } from "mathjs";
-import { IKline } from "../models/ikline";
-import { IObjectTree } from "../models/iobject-tree";
+import { Matrix } from "mathjs";
 
-export const renderTA = (ctx: CanvasRenderingContext2D, tMatrix: Matrix) => {};
+export const renderTA = (
+  ctx: CanvasRenderingContext2D,
+  tMatrix: Matrix
+): void => {};

@@ -1,7 +1,9 @@
 import { add, matrix, Matrix, multiply } from "mathjs";
-import { createElement } from "../../helpers/create-element";
+
 import { IPoint } from "../../models/ipoints";
-import { ChartComponent } from "../chart-component";
+
+import { createElement } from "../../helpers/create-element";
+
 import { GraphComponent } from "./graph-component";
 
 export class PriceAxisComponent {
@@ -10,7 +12,7 @@ export class PriceAxisComponent {
   private _canvas: HTMLCanvasElement;
   private _canvasContext: CanvasRenderingContext2D;
 
-  private _drag: Boolean;
+  private _drag: boolean;
   private _dragStart: IPoint;
   private _dragEnd: IPoint;
 
@@ -32,19 +34,19 @@ export class PriceAxisComponent {
 
     this._graphComponent.element.appendChild(this.canvas);
 
-    this._canvas.onmousedown = (event: MouseEvent) => {
+    this._canvas.onmousedown = (event: MouseEvent): void => {
       this.graphMouseDown(event);
     };
 
-    this._canvas.onmousemove = (event: MouseEvent) => {
+    this._canvas.onmousemove = (event: MouseEvent): void => {
       this.graphMouseMove(event);
     };
 
-    this._canvas.onmouseup = (event: MouseEvent) => {
+    this._canvas.onmouseup = (event: MouseEvent): void => {
       this.graphMouseUp(event);
     };
 
-    this._canvas.onwheel = (event: WheelEvent) => {
+    this._canvas.onwheel = (event: WheelEvent): void => {
       this.graphWheel(event);
     };
 
@@ -61,16 +63,16 @@ export class PriceAxisComponent {
     };
   }
 
-  public get canvas() {
+  public get canvas(): HTMLCanvasElement {
     return this._canvas;
   }
 
-  public get canvasContext() {
+  public get canvasContext(): CanvasRenderingContext2D {
     return this._canvasContext;
   }
 
-  public getMousePos(event: MouseEvent) {
-    var rect = this._canvas.getBoundingClientRect();
+  public getMousePos(event: MouseEvent): IPoint {
+    const rect: DOMRect = this._canvas.getBoundingClientRect();
 
     return {
       x: event.clientX - rect.left,
@@ -78,7 +80,7 @@ export class PriceAxisComponent {
     };
   }
 
-  public graphMouseDown(event: MouseEvent) {
+  public graphMouseDown(event: MouseEvent): void {
     this._dragStart = {
       x: event.pageX - this._canvas.offsetLeft,
       y: event.pageY - this._canvas.offsetTop,
@@ -87,7 +89,7 @@ export class PriceAxisComponent {
     this._drag = true;
   }
 
-  public graphMouseUp(event: MouseEvent) {
+  public graphMouseUp(event: MouseEvent): void {
     this._drag = false;
     this._dragStart = {
       x: 0,
@@ -99,16 +101,16 @@ export class PriceAxisComponent {
     };
   }
 
-  public graphMouseMove(event: MouseEvent) {
+  public graphMouseMove(event: MouseEvent): void {
     if (this._drag) {
       this._dragEnd = {
         x: event.pageX - this._canvas.offsetLeft,
         y: event.pageY - this._canvas.offsetTop,
       };
-      var xDrag = this._dragEnd.x - this._dragStart.x;
-      var yDrag = this._dragEnd.y - this._dragStart.y;
+      const xDrag: number = this._dragEnd.x - this._dragStart.x;
+      const yDrag: number = this._dragEnd.y - this._dragStart.y;
 
-      var transform: Matrix = matrix([
+      const transform: Matrix = matrix([
         [0, 0, xDrag],
         [0, 0, yDrag],
         [0, 0, 0],
@@ -118,52 +120,51 @@ export class PriceAxisComponent {
         this._graphComponent.transformationMatrix,
         transform
       ) as Matrix;
+
       this._dragStart = this._dragEnd;
 
       this._graphComponent.render();
     }
   }
 
-  public graphWheel(event: WheelEvent) {
-    var scaleFactor = 0;
+  public graphWheel(event: WheelEvent): void {
+    var scaleFactor: number = 0;
 
     if (event.deltaY > 0) scaleFactor = 0.9;
     else scaleFactor = 1.1;
 
-    console.log(this.canvas.getBoundingClientRect());
-    console.log(this.canvas.getBoundingClientRect().y / 2);
-    console.log(this.getMousePos(event));
-
-    var mosPos = {
+    const mosPos: IPoint = {
       x: 0,
       y: this.canvas.getBoundingClientRect().height / 2,
     };
 
-    var t1: Matrix = matrix([
+    const t1: Matrix = matrix([
       [1, 0, 0],
       [0, 1, mosPos.y],
       [0, 0, 1],
     ]);
-    var s: Matrix = matrix([
+
+    const s: Matrix = matrix([
       [1, 0, 0],
       [0, scaleFactor, 0],
       [0, 0, 1],
     ]);
-    var t2: Matrix = matrix([
+
+    const t2: Matrix = matrix([
       [1, 0, 0],
       [0, 1, 0 - mosPos.y],
       [0, 0, 1],
     ]);
 
-    var x1: Matrix = multiply(t1, s);
-    var x2: Matrix = multiply(x1, t2);
+    const x1: Matrix = multiply(t1, s);
+    const x2: Matrix = multiply(x1, t2);
 
-    var x3: Matrix = multiply(x2, this._graphComponent.transformationMatrix);
+    const x3: Matrix = multiply(x2, this._graphComponent.transformationMatrix);
 
     this._graphComponent.transformationMatrix = x3;
 
-    event.preventDefault();
-
     this._graphComponent.render();
+
+    event.preventDefault();
   }
 }

@@ -1,9 +1,9 @@
-import { ToolbarComponent } from "./toolbar-components/toolbar-component";
-import { GraphComponent } from "./graph-components/graph-component";
-
 import { IKlineSeries } from "../models/ikline-series";
 
 import { createElement } from "../helpers/create-element";
+
+import { ToolbarComponent } from "./toolbar-components/toolbar-component";
+import { GraphComponent } from "./graph-components/graph-component";
 
 export class ChartComponent {
   private _element: HTMLElement;
@@ -30,11 +30,11 @@ export class ChartComponent {
     this._graphComponent = new GraphComponent(this);
   }
 
-  public get element() {
+  public get element(): HTMLElement {
     return this._element;
   }
 
-  public get graphComponent() {
+  public get graphComponent(): GraphComponent {
     return this._graphComponent;
   }
 
@@ -42,15 +42,15 @@ export class ChartComponent {
     this._tool = value;
   }
 
-  public render() {
+  public render(): void {
     this._graphComponent.render();
   }
 
-  public setKlineData(klineSeriesArray: IKlineSeries[]) {
+  public setKlineData(klineSeriesArray: IKlineSeries[]): void {
     this._graphComponent.setKlineData(klineSeriesArray);
   }
 
-  public setTAData(taData: any[]) {
+  public setTAData(taData: any[]): void {
     this._graphComponent.setTAData(taData);
   }
 }

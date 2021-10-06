@@ -1,6 +1,5 @@
 import { createElement } from "../../helpers/create-element";
-import { IPoint } from "../../models/ipoints";
-import { ChartComponent } from "../chart-component";
+
 import { GraphComponent } from "./graph-component";
 
 export class SettingsComponent {
@@ -26,12 +25,12 @@ export class SettingsComponent {
 
     this._graphComponent.element.appendChild(this.element);
 
-    this.element.onmousedown = (event: MouseEvent) => {
+    this.element.onmousedown = (event: MouseEvent): void => {
       console.log("click");
     };
   }
 
-  public get element() {
+  public get element(): HTMLElement {
     return this._element;
   }
 }

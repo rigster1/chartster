@@ -1,6 +1,6 @@
 export const createElement = function (elementObject: any) {
-  let type = elementObject.type || "div";
-  let element = document.createElement(type);
+  var type = elementObject.type || "div";
+  var element = document.createElement(type);
 
   // assign properties
   for (const key of Object.keys(elementObject)) {

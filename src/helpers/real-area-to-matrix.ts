@@ -1,4 +1,5 @@
 import { matrix, Matrix, multiply } from "mathjs";
+
 import { IRect } from "../models/irect";
 
 export const realAreaToMatrix = (
@@ -20,13 +21,13 @@ export const realAreaToMatrix = (
   const xScale: number = canvasWidth / realWidth;
   const yScale: number = canvasHeight / -realHeight;
 
-  var s: Matrix = matrix([
+  const s: Matrix = matrix([
     [xScale, 0, 0],
     [0, yScale, 0],
     [0, 0, 1],
   ]);
 
-  var x3: Matrix = multiply(tMatrix, s);
+  const x3: Matrix = multiply(s, tMatrix);
 
   return x3;
 };

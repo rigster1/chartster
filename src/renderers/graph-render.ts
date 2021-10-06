@@ -1,7 +1,8 @@
-import { Settings } from "http2";
-import { MathType, Matrix } from "mathjs";
+import { Matrix } from "mathjs";
+
 import { IObjectTree } from "../models/iobject-tree";
 import { ISettings } from "../models/isettings";
+
 import { renderKlines } from "./klines-render";
 import { renderPriceAxis } from "./price-axis-render";
 import { renderTA } from "./ta-render";
@@ -13,7 +14,7 @@ export const renderGraph = (
   timeCtx: CanvasRenderingContext2D,
   objectTree: IObjectTree,
   tMatrix: Matrix
-) => {
+): void => {
   const settings: ISettings = {
     color: "#131722",
   };

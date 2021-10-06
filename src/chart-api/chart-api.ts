@@ -1,6 +1,7 @@
-import { ChartComponent } from "../components/chart-component";
 import { IChartApi } from "./ichart-api";
 import { IKlineSeries } from "../models/ikline-series";
+
+import { ChartComponent } from "../components/chart-component";
 
 export class ChartApi implements IChartApi {
   private _container: HTMLElement;
@@ -14,7 +15,7 @@ export class ChartApi implements IChartApi {
     this._chartComponent = new ChartComponent(container);
   }
 
-  public render() {
+  public render(): void {
     this._chartComponent.render();
   }
 

@@ -1,15 +1,16 @@
-import { MathType, Matrix, multiply } from "mathjs";
+import { MathType, matrix, Matrix, multiply } from "mathjs";
+
 import { IRect } from "../models/irect";
 
 export const matrixToRealArea = (
   imageMatrix: MathType,
   canvasArea: DOMRect
-) => {
-  const canvasTL = [0, 0, 1];
-  const canvasBR = [canvasArea.width, canvasArea.height, 1];
+): IRect => {
+  const canvasTL: Matrix = matrix([0, 0, 1]);
+  const canvasBR: Matrix = matrix([canvasArea.width, canvasArea.height, 1]);
 
-  const realTL = multiply(imageMatrix, canvasTL) as Matrix;
-  const realBR = multiply(imageMatrix, canvasBR) as Matrix;
+  const realTL: Matrix = multiply(imageMatrix, canvasTL) as Matrix;
+  const realBR: Matrix = multiply(imageMatrix, canvasBR) as Matrix;
 
   return {
     topLeft: {

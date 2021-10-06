@@ -3,12 +3,11 @@ export const resizeCanvas = (
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number
-) => {
+): void => {
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
 
-  var scale = window.devicePixelRatio;
-  console.log("scale", scale);
+  const scale: number = window.devicePixelRatio;
   canvas.width = width * scale;
   canvas.height = height * scale;
 

@@ -1,7 +1,6 @@
-import { MathType, Matrix, multiply, subset } from "mathjs";
-import { IKline } from "../models/ikline";
+import { matrix, Matrix, multiply } from "mathjs";
+
 import { IKlineSeries } from "../models/ikline-series";
-import { IObjectTree } from "../models/iobject-tree";
 import { ISettings } from "../models/isettings";
 
 export const renderKlines = (
@@ -9,60 +8,51 @@ export const renderKlines = (
   klineSeries: IKlineSeries,
   tMatrix: Matrix,
   settings: ISettings
-) => {
+): void => {
   ctx.fillStyle = settings.color;
   ctx.fillRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
 
-  const barWidth = klineSeries.interval * 0.75;
+  const barWidth: number = klineSeries.interval * 0.75;
 
   klineSeries.klines.forEach((kline) => {
-    const accumulation = kline.open >= kline.close;
+    const accumulation: boolean = kline.close >= kline.open;
 
-    const body = () => {
-      const tL = [
-        kline.openTime - barWidth / 2,
-        accumulation ? kline.close : kline.open,
-        1,
-      ];
-      const bR = [
-        kline.openTime + barWidth / 2,
-        accumulation ? kline.open : kline.close,
-        1,
-      ];
+    const bodyTL: Matrix = matrix([
+      kline.openTime - barWidth / 2,
+      accumulation ? kline.close : kline.open,
+      1,
+    ]);
+    const bodyBR: Matrix = matrix([
+      kline.openTime + barWidth / 2,
+      accumulation ? kline.open : kline.close,
+      1,
+    ]);
 
-      const tLI = multiply(tMatrix, tL) as Matrix;
-      const bRI = multiply(tMatrix, bR) as Matrix;
+    const bodyTLImage: Matrix = multiply(tMatrix, bodyTL);
+    const bodyBRImage: Matrix = multiply(tMatrix, bodyBR);
 
-      const width = bRI.get([0]) - tLI.get([0]);
-      const height = bRI.get([1]) - tLI.get([1]);
+    const wickTL: Matrix = matrix([kline.openTime, kline.high, 1]);
+    const wickBR: Matrix = matrix([kline.openTime, kline.low, 1]);
 
-      ctx.fillStyle = accumulation ? "#649fd7" : "#f6e7c2";
-      ctx.fillRect(
-        Math.round(tLI.get([0])),
-        Math.round(tLI.get([1])),
-        Math.round(width),
-        Math.round(Math.abs(height) < 1 ? 1 : height)
-      );
-    };
+    const wickTLImage: Matrix = multiply(tMatrix, wickTL);
+    const wickBRImage: Matrix = multiply(tMatrix, wickBR);
 
-    const wick = () => {
-      const tL = [kline.openTime, kline.high, 1];
-      const bR = [kline.openTime, kline.low, 1];
+    var tempBodyWidth: number = bodyBRImage.get([0]) - bodyTLImage.get([0]);
+    var tempBodyHeight: number = bodyBRImage.get([1]) - bodyTLImage.get([1]);
 
-      const tLI = multiply(tMatrix, tL);
-      const bRI = multiply(tMatrix, bR);
+    const bodyX: number = Math.round(bodyTLImage.get([0]));
+    const bodyY: number = Math.round(bodyTLImage.get([1]));
+    const bodyWidth: number = 2 * Math.floor(tempBodyWidth / 2) + 1;
+    const bodyHeight: number =
+      tempBodyHeight > 1 ? Math.round(tempBodyHeight) : 1;
 
-      ctx.strokeStyle = accumulation ? "#649fd7" : "#f6e7c2";
-      ctx.beginPath();
+    const wickX: number = bodyX + bodyWidth / 2 - 0.5;
+    const wickY: number = wickTLImage.get([1]);
+    const wickWidth: number = 1;
+    const wickHeight: number = wickBRImage.get([1]) - wickTLImage.get([1]);
 
-      console.log(tLI.get([0]), tLI.get([1]));
-
-      ctx.moveTo(tLI.get([0]), tLI.get([1]));
-      ctx.lineTo(bRI.get([0]), bRI.get([1]));
-      ctx.stroke();
-    };
-
-    wick();
-    body();
+    ctx.fillStyle = accumulation ? "#f6e7c2" : "#649fd7";
+    ctx.fillRect(bodyX, bodyY, bodyWidth, bodyHeight);
+    ctx.fillRect(wickX, wickY, wickWidth, wickHeight);
   });
 };

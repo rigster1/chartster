@@ -1,7 +1,9 @@
 import { IKlineSeries } from "../models/ikline-series";
 
-export const formatBinanceKlineData = (binanceKlineData: any[][]) => {
-  let newKlineData: IKlineSeries = {
+export const formatBinanceKlineData = (
+  binanceKlineData: any[][]
+): IKlineSeries[] => {
+  const newKlineData: IKlineSeries = {
     interval: binanceKlineData[0][6] - binanceKlineData[0][0],
     klines: [],
   };

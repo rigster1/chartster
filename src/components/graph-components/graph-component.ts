@@ -1,7 +1,9 @@
-import { identity, MathType, Matrix } from "mathjs";
+import { identity, Matrix } from "mathjs";
 
+import { IKline } from "../../models/ikline";
 import { IKlineSeries } from "../../models/ikline-series";
 import { IObjectTree } from "../../models/iobject-tree";
+import { IRect } from "../../models/irect";
 
 import { createElement } from "../../helpers/create-element";
 import { realAreaToMatrix } from "../../helpers/real-area-to-matrix";
@@ -21,7 +23,7 @@ export class GraphComponent {
   private _timeAxisComponent: TimeAxisComponent;
   private _settingsComponent: SettingsComponent;
 
-  private _klineSeriesArray: IKlineSeries[] = [];
+  private _klineSeriesArray: IKlineSeries[];
   private _objectTree: IObjectTree;
 
   private _transformationMatrix: Matrix;
@@ -45,6 +47,7 @@ export class GraphComponent {
     this._timeAxisComponent = new TimeAxisComponent(this);
     this._settingsComponent = new SettingsComponent(this);
 
+    this._klineSeriesArray = [];
     this._objectTree = {
       klineSeries: {
         interval: 0,
@@ -56,11 +59,11 @@ export class GraphComponent {
     this._transformationMatrix = identity(3, 3) as Matrix;
   }
 
-  public get element() {
+  public get element(): HTMLElement {
     return this._element;
   }
 
-  public get transformationMatrix() {
+  public get transformationMatrix(): Matrix {
     return this._transformationMatrix;
   }
 
@@ -68,7 +71,7 @@ export class GraphComponent {
     this._transformationMatrix = value;
   }
 
-  public render() {
+  public render(): void {
     this._objectTree.klineSeries = this._klineSeriesArray[0];
 
     renderGraph(
@@ -80,39 +83,38 @@ export class GraphComponent {
     );
   }
 
-  public setKlineData(klineSeriesArray: IKlineSeries[]) {
+  public setKlineData(klineSeriesArray: IKlineSeries[]): void {
     this._klineSeriesArray[0] = klineSeriesArray[0];
 
-    const interval = klineSeriesArray[0].interval;
-    const klines = klineSeriesArray[0].klines;
+    const interval: number = klineSeriesArray[0].interval;
+    const klines: IKline[] = klineSeriesArray[0].klines;
 
-    const accumulation = klines[0].close > klines[0].open;
-
-    const maxHigh = Math.max(...klines.map((o) => o.high), 0);
-    const minLow = Math.min(...klines.map((o) => o.low), Number.MAX_VALUE);
-    const height = maxHigh - minLow;
-
-    console.log("maxHigh", maxHigh);
-    console.log("minLow", minLow);
-
-    this._transformationMatrix = realAreaToMatrix(
-      {
-        topLeft: {
-          x: klines[0].openTime - interval,
-          y: maxHigh + height / 10,
-        },
-        bottomRight: {
-          x: klines[klines.length - 1].openTime + interval,
-          y: minLow - height / 10,
-        },
-      },
-      this._klineViewerComponent.canvas.getBoundingClientRect()
+    const maxHigh: number = Math.max(...klines.map((o) => o.high), 0);
+    const minLow: number = Math.min(
+      ...klines.map((o) => o.low),
+      Number.MAX_VALUE
     );
 
-    console.log("start", this._transformationMatrix);
+    const height: number = maxHigh - minLow;
+
+    const realArea: IRect = {
+      topLeft: {
+        x: klines[0].openTime - interval,
+        y: maxHigh + height / 10,
+      },
+      bottomRight: {
+        x: klines[klines.length - 1].openTime + interval,
+        y: minLow - height / 10,
+      },
+    };
+
+    this._transformationMatrix = realAreaToMatrix(
+      realArea,
+      this._klineViewerComponent.canvas.getBoundingClientRect()
+    );
   }
 
-  public setTAData(taData: any[]) {
+  public setTAData(taData: any[]): void {
     this._objectTree.taData = taData;
   }
 }
